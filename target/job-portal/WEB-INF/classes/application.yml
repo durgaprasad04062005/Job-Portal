@@ -1,0 +1,53 @@
+server:
+  port: 8083
+  servlet:
+    # context-path is ignored by external Tomcat — WAR name (/job-portal) is used
+    context-path: /
+
+spring:
+  application:
+    name: job-portal-backend
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: jobportal
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
+      - org.springframework.boot.autoconfigure.mail.MailSenderValidatorAutoConfiguration
+
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+jwt:
+  secret: jobPortalSecret2024_VeryLongKey_ForHMACSHA256_AtLeast32Chars
+  expiration: 86400000
+  refresh-expiration: 604800000
+
+file:
+  upload-dir: ./uploads
+  resume-dir: ./uploads/resumes
+  logo-dir: ./uploads/logos
+
+logging:
+  level:
+    com.jobportal: DEBUG
+    org.springframework.security: INFO
+    org.springframework.data.mongodb: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+cors:
+  allowed-origins: http://localhost:3000,http://localhost:5173,http://localhost:8081

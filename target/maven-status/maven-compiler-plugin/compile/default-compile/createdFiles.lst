@@ -1,0 +1,13 @@
+com\jobportal\dto\response\ApplicationResponse$ApplicationResponseBuilder.class
+com\jobportal\dto\response\UserResponse$UserResponseBuilder.class
+com\jobportal\model\Job$JobBuilder.class
+com\jobportal\model\SavedJob$SavedJobBuilder.class
+com\jobportal\model\Application$ApplicationBuilder.class
+com\jobportal\model\User$Experience$ExperienceBuilder.class
+com\jobportal\dto\response\DashboardStatsResponse$DashboardStatsResponseBuilder.class
+com\jobportal\model\Notification$NotificationBuilder.class
+com\jobportal\dto\response\JobResponse$JobResponseBuilder.class
+com\jobportal\model\User$Education$EducationBuilder.class
+com\jobportal\dto\response\AuthResponse$AuthResponseBuilder.class
+com\jobportal\model\User$UserBuilder.class
+com\jobportal\security\DebugPathFilter.class

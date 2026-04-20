@@ -1,0 +1,26 @@
+# Test configuration — uses same local MongoDB
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: jobportal_test
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
+      - org.springframework.boot.autoconfigure.mail.MailSenderValidatorAutoConfiguration
+
+jwt:
+  secret: testSecretKey2024_VeryLongKey_ForHMACSHA256_AtLeast32Chars
+  expiration: 86400000
+  refresh-expiration: 604800000
+
+file:
+  upload-dir: ./uploads-test
+  resume-dir: ./uploads-test/resumes
+  logo-dir: ./uploads-test/logos
+
+logging:
+  level:
+    com.jobportal: WARN
