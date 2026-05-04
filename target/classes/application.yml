@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8080
   servlet:
     context-path: /
 
@@ -19,7 +19,6 @@ spring:
       max-file-size: 5MB
       max-request-size: 10MB
 
-  # ── Gmail SMTP — enabled ──────────────────────────────────────
   mail:
     host: smtp.gmail.com
     port: 587

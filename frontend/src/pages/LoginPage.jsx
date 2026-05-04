@@ -6,8 +6,8 @@ import { z } from 'zod';
 import { Eye, EyeOff, ArrowRight, Zap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import Spinner from '../components/ui/Spinner';
 import Logo from '../components/ui/Logo';
+import Spinner from '../components/ui/Spinner';
 
 const schema = z.object({
   email: z.string().email('Invalid email address'),
@@ -27,7 +27,7 @@ export default function LoginPage() {
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const fromAdmin     = location.state?.from === 'admin';
+  const fromAdmin      = location.state?.from === 'admin';
   const justRegistered = location.state?.registered === true;
   const registeredEmail = location.state?.registeredEmail || '';
 
@@ -45,11 +45,17 @@ export default function LoginPage() {
       else if (user.role === 'EMPLOYER') navigate('/employer/dashboard');
       else                               navigate('/admin/dashboard');
     } catch (err) {
-      if (!err.response) toast.error('Cannot reach server. Is the backend running?');
+      if (!err.response) toast.error('Cannot reach server. Make sure the backend is running on port 8082.');
       else toast.error(err.response?.data?.message || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
+  };
+
+  // Fill form with demo credentials — user still needs to click Sign In
+  const fillDemo = (acc) => {
+    setValue('email', acc.email, { shouldValidate: true });
+    setValue('password', acc.password, { shouldValidate: true });
   };
 
   return (
@@ -218,11 +224,11 @@ export default function LoginPage() {
               <div style={{ flex:1, height:1, background:'#f1f5f9' }} />
             </div>
 
-            {/* Demo quick-fill */}
+            {/* Demo quick-fill — fills credentials, user clicks Sign In */}
             <div style={{ display:'flex', gap:'0.5rem' }}>
               {DEMO_ACCOUNTS.map(acc => (
                 <button key={acc.label} type="button"
-                  onClick={() => { setValue('email', acc.email); setValue('password', acc.password); }}
+                  onClick={() => fillDemo(acc)}
                   style={{
                     flex:1, padding:'0.5rem 0.25rem',
                     background: acc.bg, border:`1px solid ${acc.color}33`,
@@ -230,13 +236,16 @@ export default function LoginPage() {
                     fontSize:'0.7rem', fontWeight:700, cursor:'pointer',
                     transition:'all 0.15s', letterSpacing:'0.01em',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = `0 4px 10px ${acc.color}22`; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+                  onMouseEnter={e => { e.currentTarget.style.transform='translateY(-1px)'; e.currentTarget.style.boxShadow=`0 4px 10px ${acc.color}22`; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='none'; }}
                 >
                   {acc.label}
                 </button>
               ))}
             </div>
+            <p style={{ textAlign:'center', fontSize:'0.7rem', color:'#94a3b8', marginTop:'0.375rem' }}>
+              Click a role above to fill credentials, then click Sign In ↑
+            </p>
           </div>
 
           {/* Sign up */}

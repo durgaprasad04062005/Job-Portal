@@ -21,10 +21,13 @@ public class EmailService {
     private String fromEmail;
 
     // ─────────────────────────────────────────────────────────────
-    // SHORTLISTED
+    // Each method is @Async and calls sendEmail() directly.
+    // No method calls another @Async method (avoids Spring proxy bypass).
     // ─────────────────────────────────────────────────────────────
+
     @Async
     public void sendShortlistedEmail(String to, String candidateName, String jobTitle) {
+        log.info("Sending SHORTLISTED email to: {} for job: {}", to, jobTitle);
         String subject = "Congratulations! Your Application Has Been Shortlisted - " + jobTitle;
         String body =
             "Dear " + candidateName + ",\n\n"
@@ -40,14 +43,12 @@ public class EmailService {
             + "Best regards,\n"
             + "Job Portal\n"
             + "Talent Acquisition";
-        sendEmail(to, subject, body);
+        doSend(to, subject, body);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // REJECTED
-    // ─────────────────────────────────────────────────────────────
     @Async
     public void sendRejectedEmail(String to, String candidateName, String jobTitle) {
+        log.info("Sending REJECTED email to: {} for job: {}", to, jobTitle);
         String subject = "Application Update for " + jobTitle + " - Job Portal";
         String body =
             "Dear " + candidateName + ",\n\n"
@@ -60,14 +61,12 @@ public class EmailService {
             + "Best regards,\n"
             + "Job Portal\n"
             + "Talent Acquisition";
-        sendEmail(to, subject, body);
+        doSend(to, subject, body);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // HIRED
-    // ─────────────────────────────────────────────────────────────
     @Async
     public void sendHiredEmail(String to, String candidateName, String jobTitle) {
+        log.info("Sending HIRED email to: {} for job: {}", to, jobTitle);
         String subject = "Congratulations! You've Been Selected for " + jobTitle + " - Job Portal";
         String body =
             "Dear " + candidateName + ",\n\n"
@@ -80,14 +79,12 @@ public class EmailService {
             + "Best regards,\n"
             + "Job Portal\n"
             + "Talent Acquisition";
-        sendEmail(to, subject, body);
+        doSend(to, subject, body);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // UNDER REVIEW
-    // ─────────────────────────────────────────────────────────────
     @Async
     public void sendUnderReviewEmail(String to, String candidateName, String jobTitle) {
+        log.info("Sending UNDER_REVIEW email to: {} for job: {}", to, jobTitle);
         String subject = "Application Under Review - " + jobTitle + " - Job Portal";
         String body =
             "Dear " + candidateName + ",\n\n"
@@ -98,15 +95,13 @@ public class EmailService {
             + "Best regards,\n"
             + "Job Portal\n"
             + "Talent Acquisition";
-        sendEmail(to, subject, body);
+        doSend(to, subject, body);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // NEW APPLICATION NOTIFICATION → Employer
-    // ─────────────────────────────────────────────────────────────
     @Async
     public void sendNewApplicationNotification(String to, String employerName,
                                                 String applicantName, String jobTitle) {
+        log.info("Sending new application notification to employer: {}", to);
         String subject = "New Application Received - " + jobTitle;
         String body =
             "Dear " + employerName + ",\n\n"
@@ -116,16 +111,13 @@ public class EmailService {
             + "Best regards,\n"
             + "Job Portal\n"
             + "Talent Acquisition";
-        sendEmail(to, subject, body);
+        doSend(to, subject, body);
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // AUTH EMAILS
-    // ─────────────────────────────────────────────────────────────
     @Async
     public void sendPasswordResetEmail(String to, String resetToken) {
         String url = "http://localhost:3000/reset-password?token=" + resetToken;
-        sendEmail(to, "Password Reset Request - Job Portal",
+        doSend(to, "Password Reset Request - Job Portal",
             "Dear User,\n\n"
             + "You requested a password reset for your Job Portal account.\n\n"
             + "Click the link below to reset your password (valid for 1 hour):\n"
@@ -137,7 +129,7 @@ public class EmailService {
     @Async
     public void sendEmailVerification(String to, String token) {
         String url = "http://localhost:3000/verify-email?token=" + token;
-        sendEmail(to, "Verify Your Email - Job Portal",
+        doSend(to, "Verify Your Email - Job Portal",
             "Dear User,\n\n"
             + "Welcome to Job Portal! Please verify your email address:\n"
             + url + "\n\n"
@@ -145,10 +137,7 @@ public class EmailService {
             + "Best regards,\nJob Portal\nTalent Acquisition");
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // GENERIC STATUS DISPATCHER
-    // ─────────────────────────────────────────────────────────────
-    @Async
+    // kept for backward compatibility — routes to specific methods
     public void sendApplicationStatusUpdate(String to, String applicantName,
                                              String jobTitle, String status) {
         switch (status) {
@@ -156,21 +145,25 @@ public class EmailService {
             case "REJECTED"     -> sendRejectedEmail(to, applicantName, jobTitle);
             case "HIRED"        -> sendHiredEmail(to, applicantName, jobTitle);
             case "UNDER_REVIEW" -> sendUnderReviewEmail(to, applicantName, jobTitle);
-            default             -> sendEmail(to,
-                "Application Update - " + jobTitle,
-                "Dear " + applicantName + ",\n\nYour application for \""
-                + jobTitle + "\" has been updated to: " + status + ".\n\n"
-                + "Best regards,\nJob Portal\nTalent Acquisition");
+            default             -> {
+                log.info("Sending status update email to: {} status: {}", to, status);
+                doSend(to,
+                    "Application Update - " + jobTitle,
+                    "Dear " + applicantName + ",\n\nYour application for \""
+                    + jobTitle + "\" has been updated to: " + status + ".\n\n"
+                    + "Best regards,\nJob Portal\nTalent Acquisition");
+            }
         }
     }
 
     // ─────────────────────────────────────────────────────────────
-    // CORE SEND
+    // Core send — all public methods call this directly (no self-call)
     // ─────────────────────────────────────────────────────────────
-    private void sendEmail(String to, String subject, String body) {
+    private void doSend(String to, String subject, String body) {
         if (mailSender == null) {
-            log.warn("Mail sender not configured. Email NOT sent to: {}", to);
-            log.info("Subject: {}\nBody:\n{}", subject, body);
+            log.warn("=== MAIL NOT CONFIGURED — email not sent ===");
+            log.warn("To: {} | Subject: {}", to, subject);
+            log.warn("Body:\n{}", body);
             return;
         }
         try {
@@ -182,7 +175,7 @@ public class EmailService {
             mailSender.send(msg);
             log.info("✅ Email sent → To: {} | Subject: {}", to, subject);
         } catch (Exception e) {
-            log.error("❌ Failed to send email to {}: {}", to, e.getMessage());
+            log.error("❌ Email failed → To: {} | Error: {}", to, e.getMessage(), e);
         }
     }
 }

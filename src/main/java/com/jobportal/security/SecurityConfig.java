@@ -50,6 +50,8 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
+            // Root endpoint — public
+            .requestMatchers("/")
             // All auth endpoints — no JWT needed
             .requestMatchers(
                 "/auth/login",

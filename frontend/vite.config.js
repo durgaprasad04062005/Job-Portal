@@ -1,30 +1,26 @@
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
-  const backendUrl = env.VITE_API_URL || 'http://localhost:8082'
+// Backend runs on http://localhost:8080 (Spring Boot default)
+const BACKEND = 'http://localhost:8080'
 
-  return {
-    plugins: [react()],
-    server: {
-      port: 3000,
-      strictPort: false,   // use next available port if 3000 is taken
-      proxy: {
-        // Proxy ALL /auth, /jobs, /profile, etc. to the backend
-        // This avoids CORS issues entirely
-        '/auth': { target: backendUrl, changeOrigin: true },
-        '/jobs': { target: backendUrl, changeOrigin: true },
-        '/profile': { target: backendUrl, changeOrigin: true },
-        '/applications': { target: backendUrl, changeOrigin: true },
-        '/student': { target: backendUrl, changeOrigin: true },
-        '/employer': { target: backendUrl, changeOrigin: true },
-        '/admin': { target: backendUrl, changeOrigin: true },
-        '/notifications': { target: backendUrl, changeOrigin: true },
-        '/dashboard': { target: backendUrl, changeOrigin: true },
-        '/files': { target: backendUrl, changeOrigin: true },
-        '/actuator': { target: backendUrl, changeOrigin: true },
-      }
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 3000,
+    strictPort: false,
+    proxy: {
+      '/auth':          { target: BACKEND, changeOrigin: true },
+      '/jobs':          { target: BACKEND, changeOrigin: true },
+      '/profile':       { target: BACKEND, changeOrigin: true },
+      '/applications':  { target: BACKEND, changeOrigin: true },
+      '/student':       { target: BACKEND, changeOrigin: true },
+      '/employer':      { target: BACKEND, changeOrigin: true },
+      '/admin':         { target: BACKEND, changeOrigin: true },
+      '/notifications': { target: BACKEND, changeOrigin: true },
+      '/dashboard':     { target: BACKEND, changeOrigin: true },
+      '/files':         { target: BACKEND, changeOrigin: true },
+      '/actuator':      { target: BACKEND, changeOrigin: true },
     }
   }
 })

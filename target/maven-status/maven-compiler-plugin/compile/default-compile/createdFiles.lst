@@ -5,6 +5,7 @@ com\jobportal\model\SavedJob$SavedJobBuilder.class
 com\jobportal\model\Application$ApplicationBuilder.class
 com\jobportal\model\User$Experience$ExperienceBuilder.class
 com\jobportal\dto\response\DashboardStatsResponse$DashboardStatsResponseBuilder.class
+com\jobportal\controller\RootController.class
 com\jobportal\model\Notification$NotificationBuilder.class
 com\jobportal\dto\response\JobResponse$JobResponseBuilder.class
 com\jobportal\model\User$Education$EducationBuilder.class
